@@ -3,6 +3,7 @@ package com.yusufmercan.taskmanager.service;
 import com.yusufmercan.taskmanager.dto.UserRequest;
 import com.yusufmercan.taskmanager.dto.UserResponse;
 import com.yusufmercan.taskmanager.entity.User;
+import com.yusufmercan.taskmanager.exception.ResourceNotFoundException;
 import com.yusufmercan.taskmanager.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -56,7 +57,9 @@ public class UserService {
     public UserResponse findById(Long id) {
 
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User not found")
+                );
 
         return mapToResponse(user);
     }
@@ -65,7 +68,9 @@ public class UserService {
     public void deleteUserById(Long id) {
 
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User not found")
+                );
 
         userRepository.delete(user);
     }

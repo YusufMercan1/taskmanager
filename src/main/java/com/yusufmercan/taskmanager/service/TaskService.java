@@ -4,6 +4,7 @@ import com.yusufmercan.taskmanager.dto.TaskRequest;
 import com.yusufmercan.taskmanager.dto.TaskResponse;
 import com.yusufmercan.taskmanager.entity.Task;
 import com.yusufmercan.taskmanager.entity.User;
+import com.yusufmercan.taskmanager.exception.ResourceNotFoundException;
 import com.yusufmercan.taskmanager.repository.TaskRepository;
 import com.yusufmercan.taskmanager.repository.UserRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,6 +18,7 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
 
+
     public TaskService(
             TaskRepository taskRepository,
             UserRepository userRepository
@@ -25,11 +27,13 @@ public class TaskService {
         this.userRepository = userRepository;
     }
 
+
     public TaskResponse createTask(TaskRequest request) {
 
         User user = getCurrentUser();
 
         Task task = new Task();
+
         task.setTitle(request.getTitle());
         task.setDescription(request.getDescription());
         task.setCompleted(request.isCompleted());
@@ -39,6 +43,7 @@ public class TaskService {
 
         return mapToResponse(savedTask);
     }
+
 
     public List<TaskResponse> findAll() {
 
@@ -50,53 +55,70 @@ public class TaskService {
                 .toList();
     }
 
+
     public TaskResponse findById(Long id) {
 
         User user = getCurrentUser();
 
         Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Task not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Task not found")
+                );
+
 
         if (!task.getUser().getId().equals(user.getId())) {
-            throw new RuntimeException("Access denied");
+            throw new ResourceNotFoundException("Access denied");
         }
+
 
         return mapToResponse(task);
     }
+
 
     public TaskResponse updateTask(Long id, TaskRequest request) {
 
         User user = getCurrentUser();
 
         Task existingTask = taskRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Task not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Task not found")
+                );
+
 
         if (!existingTask.getUser().getId().equals(user.getId())) {
-            throw new RuntimeException("Access denied");
+            throw new ResourceNotFoundException("Access denied");
         }
+
 
         existingTask.setTitle(request.getTitle());
         existingTask.setDescription(request.getDescription());
         existingTask.setCompleted(request.isCompleted());
+
 
         Task savedTask = taskRepository.save(existingTask);
 
         return mapToResponse(savedTask);
     }
 
+
     public void deleteTaskById(Long id) {
 
         User user = getCurrentUser();
 
         Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Task not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Task not found")
+                );
+
 
         if (!task.getUser().getId().equals(user.getId())) {
-            throw new RuntimeException("Access denied");
+            throw new ResourceNotFoundException("Access denied");
         }
+
 
         taskRepository.delete(task);
     }
+
 
     private User getCurrentUser() {
 
@@ -105,9 +127,13 @@ public class TaskService {
                 .getAuthentication()
                 .getName();
 
+
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User not found")
+                );
     }
+
 
     private TaskResponse mapToResponse(Task task) {
 
