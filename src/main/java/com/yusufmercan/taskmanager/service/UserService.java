@@ -1,9 +1,11 @@
 package com.yusufmercan.taskmanager.service;
 
+import com.yusufmercan.taskmanager.dto.UserRequest;
+import com.yusufmercan.taskmanager.dto.UserResponse;
 import com.yusufmercan.taskmanager.entity.User;
 import com.yusufmercan.taskmanager.repository.UserRepository;
-import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -16,31 +18,47 @@ public class UserService {
 
     public UserService(
             UserRepository userRepository,
-            PasswordEncoder passwordEncoder) {
-
+            PasswordEncoder passwordEncoder
+    ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
 
-    public User createUser(User user) {
+    public UserResponse createUser(UserRequest request) {
+
+        User user = new User();
+
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setEmail(request.getEmail());
 
         user.setPassword(
-                passwordEncoder.encode(user.getPassword())
+                passwordEncoder.encode(request.getPassword())
         );
 
-        return userRepository.save(user);
+
+        User savedUser = userRepository.save(user);
+
+        return mapToResponse(savedUser);
     }
 
 
-    public List<User> findAll() {
-        return userRepository.findAll();
+    public List<UserResponse> findAll() {
+
+        return userRepository.findAll()
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
     }
 
 
-    public User findById(Long id) {
-        return userRepository.findById(id)
+    public UserResponse findById(Long id) {
+
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return mapToResponse(user);
     }
 
 
@@ -50,5 +68,18 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         userRepository.delete(user);
+    }
+
+
+    private UserResponse mapToResponse(User user) {
+
+        UserResponse response = new UserResponse();
+
+        response.setId(user.getId());
+        response.setFirstName(user.getFirstName());
+        response.setLastName(user.getLastName());
+        response.setEmail(user.getEmail());
+
+        return response;
     }
 }
