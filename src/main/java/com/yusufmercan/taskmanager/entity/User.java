@@ -1,16 +1,19 @@
 package com.yusufmercan.taskmanager.entity;
-
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "users")
-@Getter
 @Setter
+@Getter
 public class User {
+
     @Id
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String firstName;
@@ -23,4 +26,6 @@ public class User {
     private String password;
 
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Task> tasks = new ArrayList<>();
 }
