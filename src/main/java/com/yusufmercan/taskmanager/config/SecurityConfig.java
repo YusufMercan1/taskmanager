@@ -42,13 +42,16 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
-                        // Register + login öppna
+                        // Öppna endpoints
                         .requestMatchers(
                                 "/api/users",
-                                "/api/auth/**"
+                                "/api/auth/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**"
                         ).permitAll()
 
-                        // Resten kräver JWT
+                        // Alla andra endpoints kräver JWT
                         .anyRequest().authenticated()
                 )
 
