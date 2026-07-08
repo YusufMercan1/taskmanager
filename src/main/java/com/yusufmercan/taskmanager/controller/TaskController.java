@@ -1,6 +1,7 @@
 package com.yusufmercan.taskmanager.controller;
 
-import com.yusufmercan.taskmanager.entity.Task;
+import com.yusufmercan.taskmanager.dto.TaskRequest;
+import com.yusufmercan.taskmanager.dto.TaskResponse;
 import com.yusufmercan.taskmanager.service.TaskService;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,20 +17,33 @@ public class TaskController {
         this.taskService = taskService;
     }
 
+
     @PostMapping
-    public Task createTask(@RequestBody Task task) {
-        return taskService.createTask(task);
+    public TaskResponse createTask(@RequestBody TaskRequest request) {
+        return taskService.createTask(request);
     }
 
+
     @GetMapping
-    public List<Task> findAll() {
+    public List<TaskResponse> findAll() {
         return taskService.findAll();
     }
 
+
     @GetMapping("/{id}")
-    public Task findById(@PathVariable Long id) {
+    public TaskResponse findById(@PathVariable Long id) {
         return taskService.findById(id);
     }
+
+
+    @PutMapping("/{id}")
+    public TaskResponse updateTask(
+            @PathVariable Long id,
+            @RequestBody TaskRequest request
+    ) {
+        return taskService.updateTask(id, request);
+    }
+
 
     @DeleteMapping("/{id}")
     public void deleteTask(@PathVariable Long id) {
