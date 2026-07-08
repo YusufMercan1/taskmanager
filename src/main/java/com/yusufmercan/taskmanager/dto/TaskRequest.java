@@ -9,5 +9,4 @@ public class TaskRequest {
     private String description;
     private String title;
     private boolean completed;
-    private Long userId;
 }
