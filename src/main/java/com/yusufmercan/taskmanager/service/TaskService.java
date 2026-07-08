@@ -4,6 +4,7 @@ import com.yusufmercan.taskmanager.dto.TaskRequest;
 import com.yusufmercan.taskmanager.dto.TaskResponse;
 import com.yusufmercan.taskmanager.entity.Task;
 import com.yusufmercan.taskmanager.entity.User;
+import com.yusufmercan.taskmanager.exception.AccessDeniedException;
 import com.yusufmercan.taskmanager.exception.ResourceNotFoundException;
 import com.yusufmercan.taskmanager.repository.TaskRepository;
 import com.yusufmercan.taskmanager.repository.UserRepository;
@@ -67,7 +68,9 @@ public class TaskService {
 
 
         if (!task.getUser().getId().equals(user.getId())) {
-            throw new ResourceNotFoundException("Access denied");
+            throw new AccessDeniedException(
+                    "You do not have permission"
+            );
         }
 
 
@@ -86,7 +89,9 @@ public class TaskService {
 
 
         if (!existingTask.getUser().getId().equals(user.getId())) {
-            throw new ResourceNotFoundException("Access denied");
+            throw new AccessDeniedException(
+                    "You do not have permission"
+            );
         }
 
 
@@ -112,7 +117,9 @@ public class TaskService {
 
 
         if (!task.getUser().getId().equals(user.getId())) {
-            throw new ResourceNotFoundException("Access denied");
+            throw new AccessDeniedException(
+                    "You do not have permission"
+            );
         }
 
 
