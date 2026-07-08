@@ -6,6 +6,7 @@ import com.yusufmercan.taskmanager.entity.Task;
 import com.yusufmercan.taskmanager.entity.User;
 import com.yusufmercan.taskmanager.repository.TaskRepository;
 import com.yusufmercan.taskmanager.repository.UserRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,7 +29,13 @@ public class TaskService {
 
     public TaskResponse createTask(TaskRequest request) {
 
-        User user = userRepository.findById(request.getUserId())
+        String email = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+
+
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
 
