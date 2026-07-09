@@ -3,6 +3,7 @@ package com.yusufmercan.taskmanager.controller;
 import com.yusufmercan.taskmanager.dto.TaskRequest;
 import com.yusufmercan.taskmanager.dto.TaskResponse;
 import com.yusufmercan.taskmanager.service.TaskService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,7 +20,9 @@ public class TaskController {
 
 
     @PostMapping
-    public TaskResponse createTask(@RequestBody TaskRequest request) {
+    public TaskResponse createTask(
+            @Valid @RequestBody TaskRequest request
+    ) {
         return taskService.createTask(request);
     }
 
@@ -31,7 +34,9 @@ public class TaskController {
 
 
     @GetMapping("/{id}")
-    public TaskResponse findById(@PathVariable Long id) {
+    public TaskResponse findById(
+            @PathVariable Long id
+    ) {
         return taskService.findById(id);
     }
 
@@ -39,14 +44,16 @@ public class TaskController {
     @PutMapping("/{id}")
     public TaskResponse updateTask(
             @PathVariable Long id,
-            @RequestBody TaskRequest request
+            @Valid @RequestBody TaskRequest request
     ) {
         return taskService.updateTask(id, request);
     }
 
 
     @DeleteMapping("/{id}")
-    public void deleteTask(@PathVariable Long id) {
+    public void deleteTask(
+            @PathVariable Long id
+    ) {
         taskService.deleteTaskById(id);
     }
 }

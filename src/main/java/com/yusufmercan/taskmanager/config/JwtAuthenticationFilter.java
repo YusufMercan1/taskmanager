@@ -56,6 +56,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
         String email = jwtService.extractEmail(token);
+        System.out.println("JWT EMAIL: " + email);
 
 
         if (email != null &&
@@ -66,7 +67,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     new UsernamePasswordAuthenticationToken(
                             email,
                             null,
-                            null
+                            java.util.Collections.emptyList()
                     );
 
 
