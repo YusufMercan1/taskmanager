@@ -10,10 +10,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.HashMap;
 import java.util.Map;
 
-
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFound(
@@ -30,7 +28,6 @@ public class GlobalExceptionHandler {
                 HttpStatus.NOT_FOUND
         );
     }
-
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationErrors(
@@ -54,7 +51,6 @@ public class GlobalExceptionHandler {
         );
     }
 
-
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleAccessDenied(
             AccessDeniedException exception
@@ -71,6 +67,21 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidCredentials(
+            InvalidCredentialsException exception
+    ) {
+
+        ErrorResponse error = new ErrorResponse(
+                exception.getMessage(),
+                HttpStatus.UNAUTHORIZED.value()
+        );
+
+        return new ResponseEntity<>(
+                error,
+                HttpStatus.UNAUTHORIZED
+        );
+    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneralException(

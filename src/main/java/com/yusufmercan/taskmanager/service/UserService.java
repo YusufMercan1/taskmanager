@@ -16,7 +16,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-
     public UserService(
             UserRepository userRepository,
             PasswordEncoder passwordEncoder
@@ -25,7 +24,6 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-
     public UserResponse createUser(UserRequest request) {
 
         User user = new User();
@@ -33,17 +31,14 @@ public class UserService {
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setEmail(request.getEmail());
-
         user.setPassword(
                 passwordEncoder.encode(request.getPassword())
         );
-
 
         User savedUser = userRepository.save(user);
 
         return mapToResponse(savedUser);
     }
-
 
     public List<UserResponse> findAll() {
 
@@ -53,28 +48,29 @@ public class UserService {
                 .toList();
     }
 
-
     public UserResponse findById(Long id) {
 
         User user = userRepository.findById(id)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("User not found")
+                        new ResourceNotFoundException(
+                                "User not found"
+                        )
                 );
 
         return mapToResponse(user);
     }
 
-
     public void deleteUserById(Long id) {
 
         User user = userRepository.findById(id)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("User not found")
+                        new ResourceNotFoundException(
+                                "User not found"
+                        )
                 );
 
         userRepository.delete(user);
     }
-
 
     private UserResponse mapToResponse(User user) {
 
