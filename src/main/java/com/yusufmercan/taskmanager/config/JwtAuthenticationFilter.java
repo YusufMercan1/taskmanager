@@ -12,19 +12,16 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-
+import java.util.List;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-
     private final JwtService jwtService;
-
 
     public JwtAuthenticationFilter(JwtService jwtService) {
         this.jwtService = jwtService;
     }
-
 
     @Override
     protected void doFilterInternal(
@@ -33,8 +30,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-
-        // Login och register ska inte behöva JWT
         if (request.getServletPath().startsWith("/api/auth")
                 || request.getServletPath().equals("/api/users")) {
 
@@ -42,45 +37,52 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-
         String authHeader = request.getHeader("Authorization");
-
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-
         String token = authHeader.substring(7);
 
+        try {
 
-        String email = jwtService.extractEmail(token);
-        System.out.println("JWT EMAIL: " + email);
+            String email = jwtService.extractEmail(token);
 
+            if (email != null &&
+                    SecurityContextHolder.getContext().getAuthentication() == null) {
 
-        if (email != null &&
-                SecurityContextHolder.getContext().getAuthentication() == null) {
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(
+                                email,
+                                null,
+                                List.of()
+                        );
 
+                authentication.setDetails(
+                        new WebAuthenticationDetailsSource()
+                                .buildDetails(request)
+                );
 
-            UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(
-                            email,
-                            null,
-                            java.util.Collections.emptyList()
-                    );
+                SecurityContextHolder.getContext()
+                        .setAuthentication(authentication);
+            }
 
+        } catch (Exception exception) {
 
-            authentication.setDetails(
-                    new WebAuthenticationDetailsSource()
-                            .buildDetails(request)
-            );
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
 
+            response.getWriter().write("""
+                    {
+                        "message": "Invalid or expired token",
+                        "status": 401
+                    }
+                    """);
 
-            SecurityContextHolder.getContext()
-                    .setAuthentication(authentication);
+            return;
         }
-
 
         filterChain.doFilter(request, response);
     }

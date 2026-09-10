@@ -4,11 +4,12 @@ import com.yusufmercan.taskmanager.dto.LoginRequest;
 import com.yusufmercan.taskmanager.entity.User;
 import com.yusufmercan.taskmanager.exception.InvalidCredentialsException;
 import com.yusufmercan.taskmanager.repository.UserRepository;
-import com.yusufmercan.taskmanager.service.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import com.yusufmercan.taskmanager.service.JwtService;
+import jakarta.validation.Valid;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,7 +55,7 @@ public class AuthController {
             )
     })
     public String login(
-            @RequestBody LoginRequest request
+            @Valid @RequestBody LoginRequest request
     ) {
 
         User user = userRepository.findByEmail(request.getEmail())
